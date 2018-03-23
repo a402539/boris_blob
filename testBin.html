@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Simple Ocrad.js Example</title>
+		<style>
+			body {
+				background: whiteSmoke;
+				font-family: sans-serif;
+				margin: 30px;
+			}
+			table {
+				border-collapse: collapse;
+			}
+
+			th, td {
+			   border: 1px solid black;
+			   text-align: right;
+			}
+			#transcription, #pic {
+				background: white;
+				display: inline-block;
+				border: 1px solid #ddd;
+				margin: 10px;
+			}
+			#transcription {
+				font-size: 30px;
+				padding: 30px;
+				min-width: 300px;
+				color: gray;
+			}
+			#transcription.done {
+				color: black;
+			}
+			#main {
+				display: flex;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>get blob data</h1>
+
+		<div id="main">
+			<div id="transcription"></div>
+			<div id="results"></div>
+		</div>
+
+		<script>
+			var transcription = document.getElementById('transcription'),
+				table = document.createElement('table'),
+				results = document.getElementById('results'),
+				radix = 16;
+
+			results.innerText = '(Click on table cell...)';
+
+			fetch('./git-bash.exe', {
+			})
+			.then(function(resp) {
+				return resp.arrayBuffer();
+			})
+			.then(function(arr) {
+				var view = new Uint8Array(arr).slice(0, 5000);	// первые 5000 байт
+				for (var i = 0, row, len = view.length; i < len; i++) {
+					var r = i % 8;
+					if (r === 0) {
+						row = table.insertRow();
+					}
+					row.insertCell(r).innerText = view[i].toString(radix);
+				}
+				transcription.appendChild(table);
+				
+				console.log(arr, view);
+				var getEventInfo = function(ev) {
+					var target = ev.target,
+						row = target.parentNode,
+						rowIndex = row.rowIndex,
+						cellIndex = target.cellIndex,
+						ind = rowIndex * 8 + cellIndex;
+					
+					return {
+						ind: ind,
+						item: view[ind],
+						itemHex: view[ind].toString(radix),
+						rowIndex: row.rowIndex,
+						cellIndex: target.cellIndex
+					};
+				};
+				table.addEventListener('mousedown', function(ev) {
+					var res = getEventInfo(ev);
+					console.log('click', res, ev);
+					table.addEventListener('mouseup', function(ev1) {
+						var res1 = getEventInfo(ev1);
+						var arr1 = view.slice(res.ind, res1.ind);			// отмеченный блок
+						var text = new TextDecoder("utf-8").decode(arr1);	// посмотреть в UTF
+						results.innerText = text + '\n' + JSON.stringify(res, null, 2) + JSON.stringify(res1, null, 2);
+					});
+				});
+			});
+		</script>
+	</body>	
+</html>
+
+
