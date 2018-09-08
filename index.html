@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.31.1 with theme Tranquilpeak 0.4.3-BETA">
+    <title>Categories</title>
+    <meta name="author" content="Firstname Lastname">
+    <meta name="keywords" content="">
+
+	<style>
+		.out {
+			white-space: pre-wrap;
+		}
+	</style>
+  </head>
+
+  <body>
+    <div id="blog">
+		<header class="title">
+			<h1>Проверить пропуск — Проверка пропуска на МКАД, ТТК, СК</h1>
+		</header>
+		<div class="text">
+			<input type="text" name="user-number" value="С941РС777" size="40" class="wpcf7-text" placeholder="Номер машины" /></span>
+			<br />
+			<button class="base-button-caption">Проверить пропуск</button>
+		</div>
+		<code class="out">
+		</code>
+    </div>
+
+<script>
+	document.getElementsByClassName('base-button-caption')[0].addEventListener('click', () => {
+		var input = document.getElementsByClassName('wpcf7-text')[0];
+		fetch("https://ru-propusk.ru/api/get.php", {
+			"credentials":"omit",
+			"headers":{},
+			"referrer":"http://ru-propusk.ru/proverit-propusk/",
+			"referrerPolicy":"no-referrer-when-downgrade",
+			"body":"{\"number\":\"" + input.value + "\"}",
+			"method":"POST",
+			"mode":"cors"
+		})
+		.then((req) => req.json())
+		.then((json) => {
+			console.log(json);
+			document.getElementsByClassName('out')[0].innerHTML = JSON.stringify(json, null, 2);
+		});
+	});
+
+</script>
+
+</body>
+</html>
